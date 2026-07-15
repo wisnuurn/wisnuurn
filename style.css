@@ -262,3 +262,17 @@ kbd {
 @media (max-width: 768px) {
     #mobile-controls { display: flex; }
 }
+.ctrl-btn {
+    width: 65px;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 3px solid white;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    margin: 10px;
+    touch-action: none; /* Mencegah browser melakukan pan/zoom saat tombol ditekan */
+    user-select: none;  /* Mencegah tombol ter-blok biru (highlight) */
+    -webkit-tap-highlight-color: transparent; /* Menghilangkan bayangan kotak saat ditekan */
+    z-index: 1000;
+}
