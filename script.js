@@ -435,3 +435,36 @@ startBtn.addEventListener('click', () => {
     } else if (isPaused) { togglePause();
     } else { startGame(); }
 });
+// --- LOGIKA KONTROL MOBILE ---
+const btnMap = {
+    'btn-up': 'w',
+    'btn-down': 's',
+    'btn-left': 'a',
+    'btn-right': 'd',
+    'btn-sprint': 'shift'
+};
+
+Object.keys(btnMap).forEach(id => {
+    const btn = document.getElementById(id);
+    const key = btnMap[id];
+    
+    // Saat tombol ditekan (sentuh)
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys[key] = true;
+    });
+    
+    // Saat tombol dilepas
+    btn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys[key] = false;
+    });
+});
+
+// Khusus untuk tombol Attack (memanggil fungsi serangan)
+document.getElementById('btn-attack').addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    // Simulasi klik mouse untuk attack
+    const event = new Event('mousedown');
+    canvas.dispatchEvent(event);
+});
