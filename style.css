@@ -276,3 +276,40 @@ kbd {
     -webkit-tap-highlight-color: transparent; /* Menghilangkan bayangan kotak saat ditekan */
     z-index: 1000;
 }
+/* Pastikan ini ada di bagian bawah style.css */
+#mobile-controls {
+    display: none; /* Default tersembunyi */
+    position: fixed; /* Menempel di layar, bukan di elemen */
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 9999; /* Pastikan selalu di atas segalanya */
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none; /* Agar tidak memblokir area game */
+}
+
+/* Aktifkan Flexbox di semua tombol dalam mobile-controls */
+.d-pad, .action-pad {
+    display: flex;
+    pointer-events: auto; /* Tombol bisa diklik */
+}
+
+.ctrl-btn {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 3px solid white;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    margin: 5px;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Paksa muncul di layar lebar maks 800px (hp/tablet) */
+@media (max-width: 800px) {
+    #mobile-controls { display: flex !important; }
+}
