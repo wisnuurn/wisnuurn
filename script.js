@@ -435,7 +435,7 @@ startBtn.addEventListener('click', () => {
     } else if (isPaused) { togglePause();
     } else { startGame(); }
 });
-// --- LOGIKA KONTROL MOBILE ---
+// --- LOGIKA KONTROL MOBILE (LEBIH ROBUST) ---
 const btnMap = {
     'btn-up': 'w',
     'btn-down': 's',
@@ -444,27 +444,27 @@ const btnMap = {
     'btn-sprint': 'shift'
 };
 
+function handleTouch(e, isPressed) {
+    const btnId = e.target.id;
+    if (btnMap[btnId]) {
+        keys[btnMap[btnId]] = isPressed;
+    }
+}
+
 Object.keys(btnMap).forEach(id => {
     const btn = document.getElementById(id);
-    const key = btnMap[id];
     
-    // Saat tombol ditekan (sentuh)
-    btn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        keys[key] = true;
-    });
-    
-    // Saat tombol dilepas
-    btn.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        keys[key] = false;
-    });
+    // Gunakan fungsi yang sama untuk semua event touch
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTouch(e, true); });
+    btn.addEventListener('touchend', (e) => { e.preventDefault(); handleTouch(e, false); });
+    btn.addEventListener('touchcancel', (e) => { e.preventDefault(); handleTouch(e, false); }); // Tambahan penting
 });
 
-// Khusus untuk tombol Attack (memanggil fungsi serangan)
-document.getElementById('btn-attack').addEventListener('touchstart', (e) => {
+// Khusus untuk tombol Attack
+const attackBtn = document.getElementById('btn-attack');
+attackBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    // Simulasi klik mouse untuk attack
+    // Simulasikan event mousedown agar fungsi serang terpanggil
     const event = new Event('mousedown');
     canvas.dispatchEvent(event);
 });
