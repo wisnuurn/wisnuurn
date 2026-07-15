@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dungeon Escape</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -34,7 +34,18 @@
 
         <!-- Kanvas Game -->
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-
+        <div id="mobile-controls">
+        <div class="d-pad">
+            <button id="btn-up" class="ctrl-btn">↑</button>
+            <button id="btn-left" class="ctrl-btn">←</button>
+            <button id="btn-right" class="ctrl-btn">→</button>
+            <button id="btn-down" class="ctrl-btn">↓</button>
+        </div>
+        <div class="action-pad">
+            <button id="btn-sprint" class="ctrl-btn">RUN</button>
+            <button id="btn-attack" class="ctrl-btn">⚔️</button>
+        </div>
+    </div>
 <!-- Layar Menu / Game Over / Pause (Overlay) -->
 <div id="overlay" class="screen">
     <div class="menu-content">

@@ -432,3 +432,36 @@ startBtn.addEventListener('click', () => {
     } else if (isPaused) { togglePause();
     } else { startGame(); }
 });
+// --- LOGIKA KONTROL MOBILE (LEBIH ROBUST) ---
+const btnMap = {
+    'btn-up': 'w',
+    'btn-down': 's',
+    'btn-left': 'a',
+    'btn-right': 'd',
+    'btn-sprint': 'shift'
+};
+
+function handleTouch(e, isPressed) {
+    const btnId = e.target.id;
+    if (btnMap[btnId]) {
+        keys[btnMap[btnId]] = isPressed;
+    }
+}
+
+Object.keys(btnMap).forEach(id => {
+    const btn = document.getElementById(id);
+    
+    // Gunakan fungsi yang sama untuk semua event touch
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTouch(e, true); });
+    btn.addEventListener('touchend', (e) => { e.preventDefault(); handleTouch(e, false); });
+    btn.addEventListener('touchcancel', (e) => { e.preventDefault(); handleTouch(e, false); }); // Tambahan penting
+});
+
+// Khusus untuk tombol Attack
+const attackBtn = document.getElementById('btn-attack');
+attackBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    // Simulasikan event mousedown agar fungsi serang terpanggil
+    const event = new Event('mousedown');
+    canvas.dispatchEvent(event);
+});
