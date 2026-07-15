@@ -1,6 +1,13 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// --- LOAD AUDIO ---
+const sounds = {
+    attack: new Audio('sound/attack.mp3'),
+    koin_hati: new Audio('sound/koin_hati.mp3'),
+    kalah: new Audio('sound/kalah.mp3')
+};
+
 // UI Elements
 const hpFill = document.getElementById('hp-fill');
 const hpText = document.getElementById('hp-text');
@@ -14,21 +21,11 @@ const startBtn = document.getElementById('start-btn');
 
 // Memuat Gambar dari folder "aset"
 const images = {
-    player_kanan: new Image(), 
-    player_kiri: new Image(), 
-    koin: new Image(), 
-    kunci: new Image(),
-    pintu: new Image(), 
-    bos: new Image(), 
-    rumput: new Image(),
-    batu: new Image(), 
-    slash_kanan: new Image(), 
-    slash_kiri: new Image(),
-    hati: new Image(), // Menambahkan aset hati
-    monster1: new Image(), 
-    monster2: new Image(), 
-    monster3: new Image(), 
-    monster4: new Image()
+    player_kanan: new Image(), player_kiri: new Image(), koin: new Image(), 
+    kunci: new Image(), pintu: new Image(), bos: new Image(), 
+    rumput: new Image(), batu: new Image(), slash_kanan: new Image(), 
+    slash_kiri: new Image(), hati: new Image(),
+    monster1: new Image(), monster2: new Image(), monster3: new Image(), monster4: new Image()
 };
 
 images.player_kanan.src = 'aset/player_kanan.png';
@@ -41,7 +38,7 @@ images.pintu.src = 'aset/pintu.png';
 images.bos.src = 'aset/bos.png';
 images.rumput.src = 'aset/rumput.jpg';
 images.batu.src = 'aset/batu.png';
-images.hati.src = 'aset/hati.png'; // Source aset hati
+images.hati.src = 'aset/hati.png';
 images.monster1.src = 'aset/monster1.png';
 images.monster2.src = 'aset/monster2.png';
 images.monster3.src = 'aset/monster3.png';
@@ -75,15 +72,17 @@ window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
 canvas.addEventListener('mousedown', (e) => {
     if (!isPlaying || isPaused) return;
     
+    // Play sound attack
+    sounds.attack.currentTime = 0;
+    sounds.attack.play().catch(e => console.log("Audio play blocked"));
+
     slashEffect.active = true;
     slashEffect.timer = 10; 
     slashEffect.x = player.x;
     slashEffect.y = player.y;
 
-    // Logika Normal: Menghadap kanan pakai slash_kanan, menghadap kiri pakai slash_kiri
     slashEffect.img = player.facingRight ? images.slash_kanan : images.slash_kiri;
 
-    // Deteksi monster yang terkena hit (damage 20)
     for (let i = monsters.length - 1; i >= 0; i--) {
         let monster = monsters[i];
         let dx = monster.x - player.x;
@@ -91,7 +90,7 @@ canvas.addEventListener('mousedown', (e) => {
         let dist = Math.sqrt(dx * dx + dy * dy);
         
         if (dist < 60) {
-            monster.hp -= 20; // Hit damage
+            monster.hp -= 20;
             if (monster.hp <= 0) {
                 monsters.splice(i, 1);
                 score += 50;
@@ -122,7 +121,7 @@ class Player extends Entity {
     constructor(x, y) {
         super(x, y, 30, images.player_kanan); 
         this.speed = 3.5;
-        this.maxHp = 100; // Menambahkan batas maksimal HP
+        this.maxHp = 100;
         this.hp = this.maxHp;
         this.hasKey = false;
         this.invincible = false;
@@ -217,7 +216,7 @@ class Monster extends Entity {
 let player;
 let monsters = [];
 let coins = [];
-let hearts = []; // Variabel untuk menyimpan item hati
+let hearts = [];
 let walls = [];
 let key;
 let door;
@@ -277,7 +276,6 @@ function initLevel() {
         return pos;
     }
 
-    // Monster
     for (let i = 0; i < level; i++) {
         let pos = getRandomEmptyPos();
         let randomSprite = monsterSprites[Math.floor(Math.random() * monsterSprites.length)];
@@ -285,18 +283,15 @@ function initLevel() {
         monsters.push(new Monster(pos.x, pos.y, 30, randomSprite, monsterSpeed, 100, 15));
     }
     
-    // Bos
     let bossPos = getRandomEmptyPos();
     let bossSpeed = 1.0 + (level * 0.1);
     monsters.push(new Monster(bossPos.x, bossPos.y, 38, images.bos, bossSpeed, 200, 30));
 
-    // Koin
     for (let i = 0; i < 4 + level; i++) {
         let pos = getRandomEmptyPos();
         coins.push(new Entity(pos.x, pos.y, 25, images.koin));
     }
 
-    // Men-spawn Item Hati (2 per level)
     for (let i = 0; i < 2; i++) {
         let pos = getRandomEmptyPos();
         hearts.push(new Entity(pos.x, pos.y, 25, images.hati));
@@ -310,7 +305,6 @@ function initLevel() {
 }
 
 function updateUI() {
-    // Memastikan bar darah persentasenya benar berdasarkan maxHp
     let hpPercentage = Math.max(0, (player.hp / player.maxHp) * 100);
     hpFill.style.width = hpPercentage + '%';
     hpText.innerText = Math.max(0, player.hp);
@@ -330,22 +324,24 @@ function gameLoop() {
     walls.forEach(wall => wall.draw());
     door.draw();
 
-    // Logika mengambil koin
     for (let i = coins.length - 1; i >= 0; i--) {
         coins[i].draw();
         if (checkCollision(player, coins[i])) {
             coins.splice(i, 1);
             score += 15;
+            sounds.koin_hati.currentTime = 0; // Reset agar bisa play cepat
+            sounds.koin_hati.play().catch(e => {});
             updateUI();
         }
     }
 
-    // Logika mengambil Item Hati (Healing)
     for (let i = hearts.length - 1; i >= 0; i--) {
         hearts[i].draw();
         if (checkCollision(player, hearts[i])) {
-            hearts.splice(i, 1); // Hapus hati dari map
-            player.hp = Math.min(player.maxHp, player.hp + 25); // Tambah 25 HP, max 100
+            hearts.splice(i, 1);
+            player.hp = Math.min(player.maxHp, player.hp + 25);
+            sounds.koin_hati.currentTime = 0;
+            sounds.koin_hati.play().catch(e => {});
             updateUI();
         }
     }
@@ -422,6 +418,7 @@ function levelComplete() {
 function gameOver() {
     isPlaying = false;
     clearInterval(timerInterval);
+    sounds.kalah.play().catch(e => {}); // Play sound kalah
     overlayTitle.innerText = "GAME OVER";
     overlayDesc.innerText = `Skor Akhir: ${score}`;
     startBtn.innerText = "MAIN LAGI";
