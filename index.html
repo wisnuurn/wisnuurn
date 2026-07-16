@@ -34,38 +34,43 @@
 
         <!-- Kanvas Game -->
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div id="mobile-controls">
-        <div class="d-pad">
-            <button id="btn-up" class="ctrl-btn">↑</button>
-            <button id="btn-left" class="ctrl-btn">←</button>
-            <button id="btn-right" class="ctrl-btn">→</button>
-            <button id="btn-down" class="ctrl-btn">↓</button>
-        </div>
-        <div class="action-pad">
-            <button id="btn-sprint" class="ctrl-btn">RUN</button>
-            <button id="btn-attack" class="ctrl-btn">⚔️</button>
-        </div>
-    </div>
-<!-- Layar Menu / Game Over / Pause (Overlay) -->
-<div id="overlay" class="screen">
-    <div class="menu-content">
-        <h1 id="overlay-title">DUNGEON ESCAPE</h1>
-        <p id="overlay-desc">Lewati labirin, ambil kunci, cari 💖 untuk pulih, basmi monster, dan temukan pintu keluar!</p>
-        
-        <!-- Kotak Panduan Kontrol -->
-        <div class="controls-box">
-            <h3>🎮 PANDUAN KONTROL</h3>
-            <ul class="control-list">
-                <li><kbd>W A S D</kbd> Bergerak</li>
-                <li><kbd>SHIFT</kbd> Lari Cepat</li>
-                <li class="highlight-atk"><kbd>KLIK KIRI</kbd> ⚔️ Serang</li>
-                <li><kbd>P</kbd> Pause Game</li>
-            </ul>
+
+        <!-- Layar Menu / Game Over / Pause (Overlay) -->
+        <div id="overlay" class="screen">
+            <div class="menu-content">
+                <h1 id="overlay-title">DUNGEON ESCAPE</h1>
+                <p id="overlay-desc">Lewati labirin, ambil kunci, cari 💖 untuk pulih, basmi monster, dan temukan pintu keluar!</p>
+                
+                <!-- Kotak Panduan Kontrol -->
+                <div class="controls-box">
+                    <h3>🎮 PANDUAN KONTROL</h3>
+                    <ul class="control-list">
+                        <li><kbd>W A S D</kbd> Bergerak</li>
+                        <li><kbd>SHIFT</kbd> Lari Cepat</li>
+                        <li class="highlight-atk"><kbd>KLIK KIRI</kbd> ⚔️ Serang</li>
+                        <li><kbd>P</kbd> Pause Game</li>
+                    </ul>
+                </div>
+
+                <button id="start-btn">MULAI GAME</button>
+            </div>
         </div>
 
-        <button id="start-btn">MULAI GAME</button>
-    </div>
-</div>
+        <!-- Kontrol Mobile (Analog & Action Buttons) -->
+        <div id="mobile-controls">
+            <!-- Area Analog Stick Kiri -->
+            <div id="joystick-zone">
+                <div id="joystick-base">
+                    <div id="joystick-stick"></div>
+                </div>
+            </div>
+            
+            <!-- Area Tombol Aksi Kanan -->
+            <div class="action-pad">
+                <button id="btn-sprint" class="ctrl-btn">RUN</button>
+                <button id="btn-attack" class="ctrl-btn">⚔️</button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

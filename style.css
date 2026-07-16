@@ -43,7 +43,7 @@ body {
     background-color: var(--bg-container); 
     border: 4px solid var(--border-color); 
     border-radius: 8px; 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9); /* Bayangan diperhalus agar lebih dramatis */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
     overflow: hidden;
 }
 
@@ -64,7 +64,7 @@ canvas {
     border-bottom: 3px solid var(--border-color); 
     font-weight: bold; 
     font-size: 16px; 
-    text-shadow: 1px 1px 2px #000; /* Teks UI lebih terbaca */
+    text-shadow: 1px 1px 2px #000;
 }
 
 .stat { 
@@ -80,14 +80,14 @@ canvas {
     background-color: var(--hp-bg); 
     border: 2px solid var(--text-light); 
     border-radius: 4px; 
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.5); /* Efek kedalaman pada bar kosong */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
 }
 
 #hp-fill { 
     width: 100%; 
     height: 100%; 
     background-color: var(--hp-fill); 
-    transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Animasi nyawa berkurang lebih mulus */
+    transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 /* =========================================
@@ -119,7 +119,7 @@ canvas {
     align-items: center; 
     text-align: center; 
     padding: 20px; 
-    backdrop-filter: blur(3px); /* Tambahan efek blur pada background layar */
+    backdrop-filter: blur(3px);
     transition: opacity 0.3s ease;
 }
 
@@ -132,7 +132,7 @@ canvas {
     font-size: 52px; 
     margin-bottom: 15px; 
     color: var(--accent-yellow); 
-    text-shadow: 3px 3px 0px #886600, 5px 5px 10px rgba(0,0,0,0.8); /* Efek teks 3D ala Arcade */
+    text-shadow: 3px 3px 0px #886600, 5px 5px 10px rgba(0,0,0,0.8);
     letter-spacing: 2px;
 }
 
@@ -155,7 +155,7 @@ button {
     border-radius: 6px; 
     cursor: pointer; 
     transition: all 0.15s ease; 
-    box-shadow: 0 4px 0 #cc9900; /* Efek tombol 3D tebal */
+    box-shadow: 0 4px 0 #cc9900;
     text-transform: uppercase;
 }
 
@@ -166,7 +166,7 @@ button:hover {
 }
 
 button:active {
-    transform: translateY(4px); /* Efek tombol ditekan ke dalam */
+    transform: translateY(4px);
     box-shadow: 0 0 0 #cc9900;
 }
 
@@ -212,13 +212,11 @@ button:active {
     gap: 10px;
 }
 
-/* Sorotan khusus untuk tombol serang */
 .highlight-atk {
     color: #ffcc00;
     font-weight: bold;
 }
 
-/* Gaya Tombol Keyboard Fisik (KBD) */
 kbd {
     background-color: #333;
     color: #fff;
@@ -227,89 +225,89 @@ kbd {
     border-radius: 4px;
     padding: 2px 8px;
     font-size: 14px;
-    font-family: Arial, sans-serif; /* Font sans-serif khusus untuk tombol agar bersih */
+    font-family: Arial, sans-serif;
     font-weight: bold;
     box-shadow: inset 0 -1px 0 rgba(0,0,0,0.5), 0 2px 2px rgba(0,0,0,0.5);
     text-shadow: none;
 }
 
+/* =========================================
+   KONTROL MOBILE (ANALOG & TOMBOL AKSI)
+   ========================================= */
 #mobile-controls {
-    display: none; /* Sembunyikan di desktop */
-    position: absolute;
+    display: none; 
+    position: absolute; 
     bottom: 20px;
     left: 20px;
     right: 20px;
+    z-index: 9999;
     justify-content: space-between;
     align-items: flex-end;
-    pointer-events: none; /* Agar klik tidak menembus canvas */
+    pointer-events: none; 
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
-.d-pad, .action-pad { pointer-events: auto; }
+@media (max-width: 800px) {
+    #mobile-controls { display: flex !important; }
+}
 
-.ctrl-btn {
+#joystick-zone {
+    width: 140px;
+    height: 140px;
+    position: relative;
+    pointer-events: auto; 
+    touch-action: none;   
+}
+
+#joystick-base {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+#joystick-stick {
     width: 60px;
     height: 60px;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 204, 0, 0.8); 
     border: 2px solid white;
     border-radius: 50%;
-    color: white;
-    font-size: 20px;
-    margin: 5px;
-    touch-action: manipulation;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+    transition: transform 0.1s ease-out; 
 }
 
-/* Tampilkan hanya jika layar lebar maksimal 768px (HP/Tablet) */
-@media (max-width: 768px) {
-    #mobile-controls { display: flex; }
+.action-pad {
+    display: flex;
+    pointer-events: auto;
+    gap: 15px;
 }
+
 .ctrl-btn {
     width: 65px;
     height: 65px;
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.2);
     border: 3px solid white;
     border-radius: 50%;
     color: white;
-    font-size: 20px;
-    margin: 10px;
-    touch-action: none; /* Mencegah browser melakukan pan/zoom saat tombol ditekan */
-    user-select: none;  /* Mencegah tombol ter-blok biru (highlight) */
-    -webkit-tap-highlight-color: transparent; /* Menghilangkan bayangan kotak saat ditekan */
-    z-index: 1000;
-}
-/* Pastikan ini ada di bagian bawah style.css */
-#mobile-controls {
-    display: none; /* Default tersembunyi */
-    position: fixed; /* Menempel di layar, bukan di elemen */
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    z-index: 9999; /* Pastikan selalu di atas segalanya */
-    justify-content: space-between;
-    align-items: flex-end;
-    pointer-events: none; /* Agar tidak memblokir area game */
-}
-
-/* Aktifkan Flexbox di semua tombol dalam mobile-controls */
-.d-pad, .action-pad {
-    display: flex;
-    pointer-events: auto; /* Tombol bisa diklik */
-}
-
-.ctrl-btn {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.4);
-    border: 3px solid white;
-    border-radius: 50%;
-    color: white;
-    font-size: 20px;
-    margin: 5px;
-    touch-action: manipulation;
+    font-weight: bold;
+    font-size: 18px;
+    touch-action: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-/* Paksa muncul di layar lebar maks 800px (hp/tablet) */
-@media (max-width: 800px) {
-    #mobile-controls { display: flex !important; }
+.ctrl-btn:active {
+    background: rgba(255, 204, 0, 0.6);
+    transform: scale(0.95);
 }

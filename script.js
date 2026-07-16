@@ -329,7 +329,7 @@ function gameLoop() {
         if (checkCollision(player, coins[i])) {
             coins.splice(i, 1);
             score += 15;
-            sounds.koin_hati.currentTime = 0; // Reset agar bisa play cepat
+            sounds.koin_hati.currentTime = 0; 
             sounds.koin_hati.play().catch(e => {});
             updateUI();
         }
@@ -418,7 +418,7 @@ function levelComplete() {
 function gameOver() {
     isPlaying = false;
     clearInterval(timerInterval);
-    sounds.kalah.play().catch(e => {}); // Play sound kalah
+    sounds.kalah.play().catch(e => {}); 
     overlayTitle.innerText = "GAME OVER";
     overlayDesc.innerText = `Skor Akhir: ${score}`;
     startBtn.innerText = "MAIN LAGI";
@@ -432,36 +432,77 @@ startBtn.addEventListener('click', () => {
     } else if (isPaused) { togglePause();
     } else { startGame(); }
 });
-// --- LOGIKA KONTROL MOBILE (LEBIH ROBUST) ---
-const btnMap = {
-    'btn-up': 'w',
-    'btn-down': 's',
-    'btn-left': 'a',
-    'btn-right': 'd',
-    'btn-sprint': 'shift'
-};
 
-function handleTouch(e, isPressed) {
-    const btnId = e.target.id;
-    if (btnMap[btnId]) {
-        keys[btnMap[btnId]] = isPressed;
+// --- LOGIKA KONTROL MOBILE (ANALOG STICK) ---
+const joystickZone = document.getElementById('joystick-zone');
+const joystickBase = document.getElementById('joystick-base');
+const joystickStick = document.getElementById('joystick-stick');
+
+let stickActive = false;
+
+function updateJoystick(e) {
+    if (!stickActive) return;
+    e.preventDefault();
+
+    const touch = e.targetTouches[0] || e.changedTouches[0];
+    const rect = joystickBase.getBoundingClientRect();
+    
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    let dx = touch.clientX - centerX;
+    let dy = touch.clientY - centerY;
+    
+    const maxRadius = rect.width / 2; 
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance > maxRadius) {
+        dx = (dx / distance) * maxRadius;
+        dy = (dy / distance) * maxRadius;
     }
+    
+    joystickStick.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    
+    const threshold = maxRadius * 0.2; 
+    
+    keys['w'] = dy < -threshold;
+    keys['s'] = dy > threshold;
+    keys['a'] = dx < -threshold;
+    keys['d'] = dx > threshold;
 }
 
-Object.keys(btnMap).forEach(id => {
-    const btn = document.getElementById(id);
+function resetJoystick(e) {
+    if (e) e.preventDefault();
+    stickActive = false;
     
-    // Gunakan fungsi yang sama untuk semua event touch
-    btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTouch(e, true); });
-    btn.addEventListener('touchend', (e) => { e.preventDefault(); handleTouch(e, false); });
-    btn.addEventListener('touchcancel', (e) => { e.preventDefault(); handleTouch(e, false); }); // Tambahan penting
-});
+    joystickStick.style.transition = 'transform 0.1s ease-out';
+    joystickStick.style.transform = `translate(-50%, -50%)`;
+    
+    keys['w'] = false; 
+    keys['s'] = false; 
+    keys['a'] = false; 
+    keys['d'] = false;
+}
 
-// Khusus untuk tombol Attack
+joystickZone.addEventListener('touchstart', (e) => {
+    stickActive = true;
+    joystickStick.style.transition = 'none'; 
+    updateJoystick(e);
+}, { passive: false });
+
+joystickZone.addEventListener('touchmove', updateJoystick, { passive: false });
+joystickZone.addEventListener('touchend', resetJoystick, { passive: false });
+joystickZone.addEventListener('touchcancel', resetJoystick, { passive: false });
+
+// --- TOMBOL AKSI (SERANG & LARI) ---
+const btnSprint = document.getElementById('btn-sprint');
+btnSprint.addEventListener('touchstart', (e) => { e.preventDefault(); keys['shift'] = true; });
+btnSprint.addEventListener('touchend', (e) => { e.preventDefault(); keys['shift'] = false; });
+btnSprint.addEventListener('touchcancel', (e) => { e.preventDefault(); keys['shift'] = false; });
+
 const attackBtn = document.getElementById('btn-attack');
 attackBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    // Simulasikan event mousedown agar fungsi serang terpanggil
     const event = new Event('mousedown');
     canvas.dispatchEvent(event);
 });
