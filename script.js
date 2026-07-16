@@ -9,7 +9,6 @@ const sounds = {
 };
 
 // UI Elements
-const hpFill = document.getElementById('hp-fill');
 const hpText = document.getElementById('hp-text');
 const scoreDisplay = document.getElementById('score-display');
 const timeDisplay = document.getElementById('time-display');
@@ -68,7 +67,7 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
 
-// Event Klik Kiri untuk Slash
+// Event Klik Kiri / Touch Mousedown untuk Slash
 canvas.addEventListener('mousedown', (e) => {
     if (!isPlaying || isPaused) return;
     
@@ -305,10 +304,7 @@ function initLevel() {
 }
 
 function updateUI() {
-    let hpPercentage = Math.max(0, (player.hp / player.maxHp) * 100);
-    hpFill.style.width = hpPercentage + '%';
     hpText.innerText = Math.max(0, player.hp);
-    
     scoreDisplay.innerText = score;
     let minutes = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
     let seconds = (timeElapsed % 60).toString().padStart(2, '0');
@@ -396,7 +392,7 @@ function togglePause() {
     isPaused = !isPaused;
     if (isPaused) {
         overlayTitle.innerText = "PAUSE";
-        overlayDesc.innerText = "Tekan P atau tombol di bawah untuk lanjut";
+        overlayDesc.innerText = "Tekan START untuk lanjut";
         startBtn.innerText = "LANJUTKAN";
         overlay.classList.remove('hidden');
     } else {
@@ -410,7 +406,7 @@ function levelComplete() {
     score += 100 + (Math.max(0, 60 - timeElapsed) * 2);
     level++;
     overlayTitle.innerText = "LEVEL BERHASIL!";
-    overlayDesc.innerText = `Skor kamu: ${score}. Bersiap untuk Level ${level}!`;
+    overlayDesc.innerText = `Skor kamu: ${score}`;
     startBtn.innerText = "LEVEL SELANJUTNYA";
     overlay.classList.remove('hidden');
 }
@@ -433,76 +429,55 @@ startBtn.addEventListener('click', () => {
     } else { startGame(); }
 });
 
-// --- LOGIKA KONTROL MOBILE (ANALOG STICK) ---
-const joystickZone = document.getElementById('joystick-zone');
-const joystickBase = document.getElementById('joystick-base');
-const joystickStick = document.getElementById('joystick-stick');
+// =========================================
+// LOGIKA KONTROL RETRO MOBILE (HITBOXES)
+// =========================================
 
-let stickActive = false;
-
-function updateJoystick(e) {
-    if (!stickActive) return;
-    e.preventDefault();
-
-    const touch = e.targetTouches[0] || e.changedTouches[0];
-    const rect = joystickBase.getBoundingClientRect();
+// Fungsi utilitas untuk mendaftarkan event sentuh ke tombol virtual
+function bindTouch(elementId, key) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
     
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+    el.addEventListener('touchstart', (e) => { 
+        e.preventDefault(); 
+        keys[key] = true; 
+    }, { passive: false });
     
-    let dx = touch.clientX - centerX;
-    let dy = touch.clientY - centerY;
+    el.addEventListener('touchend', (e) => { 
+        e.preventDefault(); 
+        keys[key] = false; 
+    }, { passive: false });
     
-    const maxRadius = rect.width / 2; 
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    
-    if (distance > maxRadius) {
-        dx = (dx / distance) * maxRadius;
-        dy = (dy / distance) * maxRadius;
-    }
-    
-    joystickStick.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-    
-    const threshold = maxRadius * 0.2; 
-    
-    keys['w'] = dy < -threshold;
-    keys['s'] = dy > threshold;
-    keys['a'] = dx < -threshold;
-    keys['d'] = dx > threshold;
+    el.addEventListener('touchcancel', (e) => { 
+        e.preventDefault(); 
+        keys[key] = false; 
+    }, { passive: false });
 }
 
-function resetJoystick(e) {
-    if (e) e.preventDefault();
-    stickActive = false;
-    
-    joystickStick.style.transition = 'transform 0.1s ease-out';
-    joystickStick.style.transform = `translate(-50%, -50%)`;
-    
-    keys['w'] = false; 
-    keys['s'] = false; 
-    keys['a'] = false; 
-    keys['d'] = false;
+// Mapping D-Pad ke pergerakan WASD
+bindTouch('pad-up', 'w');
+bindTouch('pad-down', 's');
+bindTouch('pad-left', 'a');
+bindTouch('pad-right', 'd');
+
+// Mapping Tombol B (Kiri) ke fungsi Lari (Shift)
+bindTouch('pad-b', 'shift');
+
+// Mapping Tombol A (Kanan) ke fungsi Serang (Simulasi Mouse Klik)
+const padA = document.getElementById('pad-a');
+if (padA) {
+    padA.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const event = new Event('mousedown');
+        canvas.dispatchEvent(event);
+    }, { passive: false });
 }
 
-joystickZone.addEventListener('touchstart', (e) => {
-    stickActive = true;
-    joystickStick.style.transition = 'none'; 
-    updateJoystick(e);
-}, { passive: false });
-
-joystickZone.addEventListener('touchmove', updateJoystick, { passive: false });
-joystickZone.addEventListener('touchend', resetJoystick, { passive: false });
-joystickZone.addEventListener('touchcancel', resetJoystick, { passive: false });
-
-// --- TOMBOL AKSI (SERANG & LARI) ---
-const btnSprint = document.getElementById('btn-sprint');
-btnSprint.addEventListener('touchstart', (e) => { e.preventDefault(); keys['shift'] = true; });
-btnSprint.addEventListener('touchend', (e) => { e.preventDefault(); keys['shift'] = false; });
-btnSprint.addEventListener('touchcancel', (e) => { e.preventDefault(); keys['shift'] = false; });
-
-const attackBtn = document.getElementById('btn-attack');
-attackBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    const event = new Event('mousedown');
-    canvas.dispatchEvent(event);
-});
+// Mapping Tombol Start ke Pause Game
+const padStart = document.getElementById('pad-start');
+if (padStart) {
+    padStart.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (isPlaying) togglePause();
+    }, { passive: false });
+}

@@ -3,74 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dungeon Escape</title>
+    <title>Dungeon Escape - Retro Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="game-container">
-        <!-- Tampilan UI Bar Atas -->
-        <div id="ui-bar">
-            <div class="stat">
-                <span>❤️ HP:</span> 
-                <div id="hp-bar">
-                    <div id="hp-fill"></div>
-                </div> 
-                <span id="hp-text">100</span>
-            </div>
-            <div class="stat">
-                <span>⭐ LEVEL:</span> 
-                <span id="level-display">1</span>
-            </div>
-            <div class="stat">
-                <span>⏱️ WAKTU:</span> 
-                <span id="time-display">00:00</span>
-            </div>
-            <div class="stat">
-                <span>🪙 SKOR:</span> 
-                <span id="score-display">0</span>
-            </div>
-        </div>
-
-        <!-- Kanvas Game -->
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-
-        <!-- Layar Menu / Game Over / Pause (Overlay) -->
-        <div id="overlay" class="screen">
-            <div class="menu-content">
-                <h1 id="overlay-title">DUNGEON ESCAPE</h1>
-                <p id="overlay-desc">Lewati labirin, ambil kunci, cari 💖 untuk pulih, basmi monster, dan temukan pintu keluar!</p>
-                
-                <!-- Kotak Panduan Kontrol -->
-                <div class="controls-box">
-                    <h3>🎮 PANDUAN KONTROL</h3>
-                    <ul class="control-list">
-                        <li><kbd>W A S D</kbd> Bergerak</li>
-                        <li><kbd>SHIFT</kbd> Lari Cepat</li>
-                        <li class="highlight-atk"><kbd>KLIK KIRI</kbd> ⚔️ Serang</li>
-                        <li><kbd>P</kbd> Pause Game</li>
-                    </ul>
+    <!-- Wadah Utama Perangkat Game Boy -->
+    <div id="gameboy-device">
+        <!-- Gambar Background Game Boy -->
+        <img src="gameboy.png" id="gameboy-bg" alt="Game Boy Console">
+        
+        <!-- Area Layar -->
+        <div id="game-screen-area">
+            <div id="game-container">
+                <!-- Tampilan UI Bar Atas -->
+                <div id="ui-bar">
+                    <div class="stat">❤️ <span id="hp-text">100</span></div>
+                    <div class="stat">⭐ <span id="level-display">1</span></div>
+                    <div class="stat">⏱️ <span id="time-display">00:00</span></div>
+                    <div class="stat">🪙 <span id="score-display">0</span></div>
                 </div>
 
-                <button id="start-btn">MULAI GAME</button>
+                <!-- Kanvas Game -->
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+                <!-- Layar Menu / Game Over -->
+                <div id="overlay" class="screen">
+                    <div class="menu-content">
+                        <h1 id="overlay-title">DUNGEON</h1>
+                        <p id="overlay-desc">Lewati labirin dan basmi monster!</p>
+                        <button id="start-btn">MULAI</button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Kontrol Mobile (Analog & Action Buttons) -->
-        <div id="mobile-controls">
-            <!-- Area Analog Stick Kiri -->
-            <div id="joystick-zone">
-                <div id="joystick-base">
-                    <div id="joystick-stick"></div>
-                </div>
-            </div>
-            
-            <!-- Area Tombol Aksi Kanan -->
-            <div class="action-pad">
-                <button id="btn-sprint" class="ctrl-btn">RUN</button>
-                <button id="btn-attack" class="ctrl-btn">⚔️</button>
-            </div>
-        </div>
+        <!-- Area Sentuh Transparan (Hitboxes) -->
+        <!-- D-Pad -->
+        <div id="pad-up" class="hitbox dpad"></div>
+        <div id="pad-down" class="hitbox dpad"></div>
+        <div id="pad-left" class="hitbox dpad"></div>
+        <div id="pad-right" class="hitbox dpad"></div>
+        
+        <!-- Action Buttons -->
+        <div id="pad-b" class="hitbox round-btn"></div> <!-- Kiri (B) -> Lari -->
+        <div id="pad-a" class="hitbox round-btn"></div> <!-- Kanan (A) -> Serang -->
+        
+        <!-- Start Button -->
+        <div id="pad-start" class="hitbox pill-btn"></div> <!-- Pause -->
     </div>
 
     <script src="script.js"></script>
